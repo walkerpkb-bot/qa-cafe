@@ -1,9 +1,9 @@
 /**
- * SQLite storage layer for QA Cafe
- * Handles projects, sessions, findings, etc.
+ * Storage layer for QA Cafe
+ * Uses JSON files for MVP (can upgrade to SQLite later)
  */
 
-// Placeholder - will implement with better-sqlite3
+// Using JSON file storage for MVP - simpler, no native deps
 
 export interface Project {
   id: string;
