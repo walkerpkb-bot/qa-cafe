@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { analyzeCode, hasApiKey } from '../services/claude';
 import { Link } from 'react-router-dom';
+
+// Cache key helper
+const getCacheKey = (project: string) => `qa-cafe-testmapper-${project}`;
 
 interface TestMapperProps {
   project: string | null;
@@ -68,6 +71,50 @@ function TestMapper({ project }: TestMapperProps) {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [filesScanned, setFilesScanned] = useState(0);
+  const [cachedAt, setCachedAt] = useState<string | null>(null);
+
+  // Load cached results when project changes
+  useEffect(() => {
+    if (project) {
+      try {
+        const cached = localStorage.getItem(getCacheKey(project));
+        if (cached) {
+          const { result: cachedResult, filesScanned: cachedFiles, timestamp } = JSON.parse(cached);
+          setResult(cachedResult);
+          setFilesScanned(cachedFiles);
+          setCachedAt(new Date(timestamp).toLocaleString());
+        } else {
+          setResult(null);
+          setFilesScanned(0);
+          setCachedAt(null);
+        }
+      } catch {
+        // Invalid cache, ignore
+      }
+    }
+  }, [project]);
+
+  // Save results to cache
+  const saveToCache = (analysisResult: AnalysisResult, files: number) => {
+    if (project) {
+      const cacheData = {
+        result: analysisResult,
+        filesScanned: files,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(getCacheKey(project), JSON.stringify(cacheData));
+      setCachedAt(new Date().toLocaleString());
+    }
+  };
+
+  const clearCache = () => {
+    if (project) {
+      localStorage.removeItem(getCacheKey(project));
+      setResult(null);
+      setFilesScanned(0);
+      setCachedAt(null);
+    }
+  };
 
   const runAnalysis = async () => {
     if (!project) return;
@@ -102,6 +149,7 @@ function TestMapper({ project }: TestMapperProps) {
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           setResult(parsed);
+          saveToCache(parsed, files.length);
         } else {
           setError('Could not parse analysis result. Raw response saved.');
           console.log('Raw response:', response);
@@ -139,17 +187,27 @@ function TestMapper({ project }: TestMapperProps) {
       <div className="card">
         <h3 className="card-title">Project</h3>
         <p style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{project}</p>
-        <div style={{ display: 'flex', gap: '12px', marginTop: '16px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             className="btn btn-primary"
             onClick={runAnalysis}
             disabled={loading}
           >
-            {loading ? 'Analyzing...' : 'Run Analysis'}
+            {loading ? 'Analyzing...' : result ? 'Re-run Analysis' : 'Run Analysis'}
           </button>
+          {result && (
+            <button
+              className="btn btn-secondary"
+              onClick={clearCache}
+              disabled={loading}
+            >
+              Clear Cache
+            </button>
+          )}
           {filesScanned > 0 && (
             <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
               {filesScanned} files scanned
+              {cachedAt && <span> • Cached {cachedAt}</span>}
             </span>
           )}
         </div>

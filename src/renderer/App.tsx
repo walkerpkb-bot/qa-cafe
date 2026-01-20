@@ -15,6 +15,7 @@ import ReproduceHelper from './pages/ReproduceHelper';
 import SummaryGenerator from './pages/SummaryGenerator';
 import RegressionRunner from './pages/RegressionRunner';
 import Settings from './pages/Settings';
+import QAAssistant from './pages/QAAssistant';
 
 function App() {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
@@ -25,6 +26,7 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Dashboard project={currentProject} />} />
+          <Route path="/qa-assistant" element={<QAAssistant project={currentProject} />} />
 
           {/* Phase 1: Pre-Test */}
           <Route path="/test-mapper" element={<TestMapper project={currentProject} />} />

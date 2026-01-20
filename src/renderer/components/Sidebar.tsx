@@ -63,6 +63,11 @@ function Sidebar({ currentProject, onProjectChange }: SidebarProps) {
           Dashboard
         </NavLink>
 
+        <NavLink to="/qa-assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '8px' }}>
+          <span className="nav-icon">🤖</span>
+          QA Assistant
+        </NavLink>
+
         {Object.entries(tools).map(([phase, items]) => (
           <div key={phase} className="nav-section">
             <h3 className="nav-section-title">{phase}</h3>
