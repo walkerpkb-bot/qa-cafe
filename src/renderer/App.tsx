@@ -3,11 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import TestMapper from './pages/TestMapper';
-import SpecInterrogator from './pages/SpecInterrogator';
 import TestCaseGenerator from './pages/TestCaseGenerator';
-import RiskRadar from './pages/RiskRadar';
 import SessionLogger from './pages/SessionLogger';
-import QuickReference from './pages/QuickReference';
 import CoverageTracker from './pages/CoverageTracker';
 import BugWriter from './pages/BugWriter';
 import ComparisonTool from './pages/ComparisonTool';
@@ -30,13 +27,10 @@ function App() {
 
           {/* Phase 1: Pre-Test */}
           <Route path="/test-mapper" element={<TestMapper project={currentProject} />} />
-          <Route path="/spec-interrogator" element={<SpecInterrogator project={currentProject} />} />
           <Route path="/test-case-generator" element={<TestCaseGenerator project={currentProject} />} />
-          <Route path="/risk-radar" element={<RiskRadar project={currentProject} />} />
 
           {/* Phase 2: During Test */}
           <Route path="/session-logger" element={<SessionLogger project={currentProject} />} />
-          <Route path="/quick-reference" element={<QuickReference project={currentProject} />} />
           <Route path="/coverage-tracker" element={<CoverageTracker project={currentProject} />} />
           <Route path="/bug-writer" element={<BugWriter project={currentProject} />} />
 

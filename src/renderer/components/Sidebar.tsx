@@ -9,13 +9,10 @@ interface SidebarProps {
 const tools = {
   'Pre-Test': [
     { path: '/test-mapper', name: 'Test Mapper', icon: '🗺️' },
-    { path: '/spec-interrogator', name: 'Spec Interrogator', icon: '📋' },
     { path: '/test-case-generator', name: 'Test Case Gen', icon: '📝' },
-    { path: '/risk-radar', name: 'Risk Radar', icon: '🎯' },
   ],
   'During Test': [
     { path: '/session-logger', name: 'Session Logger', icon: '📹' },
-    { path: '/quick-reference', name: 'Quick Reference', icon: '🔍' },
     { path: '/coverage-tracker', name: 'Coverage Tracker', icon: '📊' },
     { path: '/bug-writer', name: 'Bug Writer', icon: '🐛' },
   ],
