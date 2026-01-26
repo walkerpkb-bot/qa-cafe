@@ -27,6 +27,8 @@ function SessionLogger({ project }: Props) {
   const [textInput, setTextInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [showScreenshotModal, setShowScreenshotModal] = useState(false);
+  const [screenshotNote, setScreenshotNote] = useState('');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingIntervalRef = useRef<number | null>(null);
@@ -158,12 +160,21 @@ function SessionLogger({ project }: Props) {
     }
   };
 
-  const captureScreenshot = async () => {
-    // For now, just add a placeholder - full screenshot needs Electron desktopCapturer
-    const note = prompt('Describe what you see (screenshot capture coming soon):');
-    if (note) {
-      addEntry({ type: 'screenshot', content: `[Screenshot note] ${note}` });
+  const captureScreenshot = () => {
+    setShowScreenshotModal(true);
+  };
+
+  const submitScreenshotNote = () => {
+    if (screenshotNote.trim()) {
+      addEntry({ type: 'screenshot', content: `[Screenshot note] ${screenshotNote.trim()}` });
     }
+    setScreenshotNote('');
+    setShowScreenshotModal(false);
+  };
+
+  const cancelScreenshotNote = () => {
+    setScreenshotNote('');
+    setShowScreenshotModal(false);
   };
 
   const formatTime = (ms: number) => {
@@ -432,6 +443,72 @@ ${session.entries.map(entry => {
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
             Start a session to begin capturing test observations.
           </p>
+        </div>
+      )}
+
+      {/* Screenshot Note Modal */}
+      {showScreenshotModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: 'var(--bg-secondary)',
+            borderRadius: '12px',
+            padding: '24px',
+            width: '90%',
+            maxWidth: '500px',
+            border: '1px solid var(--border)',
+          }}>
+            <h3 style={{ margin: '0 0 16px 0' }}>Screenshot Note</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              Describe what you see (screenshot capture coming soon):
+            </p>
+            <textarea
+              value={screenshotNote}
+              onChange={(e) => setScreenshotNote(e.target.value)}
+              autoFocus
+              placeholder="Describe the current screen state..."
+              rows={4}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                color: 'var(--text-primary)',
+                fontSize: '1rem',
+                resize: 'none',
+                fontFamily: 'inherit',
+                boxSizing: 'border-box',
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  submitScreenshotNote();
+                }
+                if (e.key === 'Escape') {
+                  cancelScreenshotNote();
+                }
+              }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+              <button className="btn btn-secondary" onClick={cancelScreenshotNote}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={submitScreenshotNote}>
+                Save Note
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
